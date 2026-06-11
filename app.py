@@ -35,10 +35,27 @@ tech_partners = read_file("knowledge/technology_partners.md")
 cp_skill = read_file("skills/customer-problems/SKILL.md")
 fr_skill = read_file("skills/functional-requirements/SKILL.md")
 
+
+# Catalogus inlezen 
+# We voegen errors='ignore' toe zodat Python niet meer crasht op speciale teksten
+with open("knowledge/product_catalogue.md", "r", encoding="utf-8", errors="ignore") as f:
+    product_catalogue = f.read()
+
+
+
 # UI Opzet via Streamlit
 st.set_page_config(page_title="Synguard AI Requirements Agent", layout="wide")
 st.title("🛡️ Synguard AI Requirements Architect")
 st.subheader("Vertaal ongestructureerde klantvragen automatisch naar technische specificaties")
+
+st.title("🚀 Synguard AI Requirements Architect")
+
+# --- OFFICIËLE DOELSTELLING BANNER ---
+st.info(
+    "**🎯 PURPOSE:** This system collects and structures customer requirements to ensure "
+    "Synguard has sufficient technical and business details to analyse the request and create a **Statement of Work (SoW)**."
+)
+
 
 # Splitst het scherm in een invoer- en uitvoerkolom
 col1, col2 = st.columns([1, 1.5])
@@ -196,14 +213,33 @@ with col2:
             === 4. METHODIEK INSTRUCTIES ===
             {cp_skill}
             
-            === 5. RAUWE INLINE INPUT ===
+            === 5. SYNGUARD PRODUCT CATALOGUS ===
+            {product_catalogue}
+            
+            === 6. RAUWE INLINE INPUT ===
             {client_input}
             
             Genereer een gestructureerd technisch rapport met de volgende vaste onderdelen:
-            1. **Executive Summary & Business Case**: Analyseer de ROI en geef advies aan de Sales & Product Director over goedkeuring (gebaseerd op ARR en herbruikbaarheid).
-            2. **Current vs Desired Situation**: Breng de pijn en de oplossing in kaart.
-            3. **Functional Specifications (SRS)**: Schrijf formele "The system shall..." requirements op basis van de ingevoerde workflows, gewenste functionaliteiten en acceptatiecriteria. Maak onderscheid tussen core flows en integratie-eisen.
-            4. **Constraints & Compliance**: Formuleer de harde technische en compliancy-restricties (bijv. UK CAPS of ISO standaarden).
+            
+            ### 📑 1. EXECUTIVE SUMMARY & BUSINESS CASE
+            [Hier komt de ROI en de samenvatting]
+
+            ### ⚖️ 2. STRATEGIC DIRECTOR EVALUATION MATRIX (WORKING METHOD)
+            Geef een expliciet pre-advies voor de Sales- en Product Director op basis van de volgende 4 officiële Synguard criteria:
+            - **Strategic Vision fit (Yes/No + Waarom):** Past dit binnen de roadmap van Synguard?
+            - **Technical Feasibility (High/Medium/Low + Waarom):** Is dit haalbaar met de SynCon Evo / SynApp architectuur en de beschikbare partner-data?
+            - **Functional Sufficiency (Sufficient/Incomplete):** Zijn de scenario's en de huidige pijn duidelijk genoeg omschreven om misverstanden te voorkomen?
+            - **Genericity & Multi-tenant Value (Generic/Customer Specific):** Creëert dit waarde voor meerdere klanten of is het eenmalig maatwerk?
+            
+            ### 🔧 3. FUNCTIONAL SPECIFICATIONS (BASE FOR STATEMENT OF WORK)
+            Schrijf formele "The system shall..." requirements op basis van de ingevoerde workflows, gewenste functionaliteiten en acceptatiecriteria. Dit gedeelte dient na goedkeuring als directe basis voor het development team om de technische analyse te starten.
+
+            
+            # Genereer een gestructureerd technisch rapport met de volgende vaste onderdelen:
+            # 1. **Executive Summary & Business Case**: Analyseer de ROI en geef advies aan de Sales & Product Director over goedkeuring (gebaseerd op ARR en herbruikbaarheid).
+            # 2. **Current vs Desired Situation**: Breng de pijn en de oplossing in kaart.
+            # 3. **Functional Specifications (SRS)**: Schrijf formele "The system shall..." requirements op basis van de ingevoerde workflows, gewenste functionaliteiten en acceptatiecriteria. Maak onderscheid tussen core flows en integratie-eisen.
+            # 4. **Constraints & Compliance**: Formuleer de harde technische en compliancy-restricties (bijv. UK CAPS of ISO standaarden).
             """
             
             response_step1 = client.chat.completions.create(
@@ -212,6 +248,35 @@ with col2:
                 temperature=0.2,
             )
             customer_problems_output = response_step1.choices[0].message.content
+
+            # 1. Haal de gegenereerde tekst uit de Azure OpenAI response
+            generated_srs_text = response_step1.choices[0].message.content
+            
+            # 2. Toon het resultaat netjes in je Streamlit UI (rechterkolom)
+            st.markdown(generated_srs_text)
+            
+            # 3. Logica om het bestand automatisch op te slaan in VS Code
+            import os
+            from datetime import datetime
+            
+            # Maak de map 'outputs/generated_srs' aan als deze nog niet bestaat
+            output_dir = "outputs/generated_srs"
+            os.makedirs(output_dir, exist_ok=True)
+            
+            # Maak een unieke bestandsnaam op basis van tijd en de input van de klant
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M")
+            safe_title = "".join([c if c.isalnum() else "_" for c in client_input[:30]]).strip("_").lower()
+            filename = f"{timestamp}_{safe_title}.md"
+            filepath = os.path.join(output_dir, filename)
+            
+            # Schrijf de blauwdruk weg als een Markdown-bestand
+            with open(filepath, "w", encoding="utf-8") as f:
+                f.write(f"# STATUS: PENDING DIRECTORS REVIEW\n")
+                f.write(f"# GENERATED ON: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n")
+                f.write(generated_srs_text)
+                
+            # Toon een groene succesmelding onderaan in je Streamlit app
+            st.success(f"💾 Requirements blueprint succesvol opgeslagen in: `{filepath}`")
 
             # --- STAP 2: VERTAAL NAAR FUNCTIONELE REQUIREMENTS (HET WAT) ---
             prompt_step2 = f"""

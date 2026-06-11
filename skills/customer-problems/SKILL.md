@@ -9,6 +9,13 @@ metadata:
   step: 1
 ---
 
+## Process Context & Objective
+- **Purpose:** Het primaire doel van dit gegenereerde document is om alle klantvereisten zo gedetailleerd en gestructureerd mogelijk te verzamelen. Dit dient als de basis voor Synguard om een formele **Statement of Work (SoW)** op te stellen.
+- **Working Method (De Accordaansluiting):** 1. *Fase 1 (Strategische Evaluatie):* Het document wordt eerst voorgelegd aan de Sales- en Product Director. Zij beoordelen de aanvraag op: Strategische visie, Technische haalbaarheid, Functionele volledigheid en Genericiteit (waarde voor meerdere klanten / multi-tenant).
+  2. *Fase 2 (Engineering):* Na goedkeuring door de directie dient dít document als de harde basis voor de verdere diepe technische analyse door het development team.
+
+
+
 # Customer Problems (CP)
 
 > **Step 1** of the Problem-Based SRS methodology  

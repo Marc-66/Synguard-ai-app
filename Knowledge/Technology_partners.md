@@ -128,3 +128,71 @@ Dit document bevat de gecertificeerde technologiepartners en hardware-integratie
 - **Fabrikant:** Syntegro (Zusterbedrijf van Synguard)
 - **Ecosysteem/Technologie:** Workforce Management, Time & Attendance (T&A)
 - **Rol & Integratie:** Levert de Workforce Management software die vaak gebundeld (gebundeld) wordt met het toegangssysteem voor urenregistratie en aanwezigheidsoverzichten via de toegangsterminals.
+
+
+# Synguard Technology Partners Ecosystem
+
+Dit document bevat de officiële technologiepartners van het Synguard ecosysteem. De AI-agent gebruikt deze data om bij integratie-aanvragen direct de juiste protocollen, interfaces en partnerwebsites te mappen in de engineering blueprint.
+
+---
+
+## 1. Draadloze Sloten & Cilinders (Wireless Locking Systems)
+Integraties met digitale, batterijgevoede sloten en cilinders. Deze worden beheerd vanuit SynApp en communiceren via IP-hubs of gateways met de Synguard infrastructuur.
+
+| Partner | Website | Integratie Type / Toepassing | Ondersteunde Protocollen / Hardware |
+| :--- | :--- | :--- | :--- |
+| **iLOQ** | https://www.iloq.com | Batterijloze digitale cilinders en sloten (S5/S50). | REST API / Cloud Gateway integratie met SynApp. |
+| **Assa Abloy** | https://www.assaabloy.com | Aperio draadloze beslagen en cilinders. | RS-485 of IP Hub rechtstreeks gekoppeld aan SynCon Evo. |
+| **SimonsVoss** | https://www.simons-voss.com | SmartIntego digitale sluitsystemen. | SmartIntego Gateway gekoppeld via IP aan de Synguard server. |
+| **UHLMANN & ZACHER** | https://www.u-z.de | Elektronische cilinders en deurgrepen. | Canny-bus / Gateway integratie met SynCon Evo controller. |
+
+---
+
+## 2. Bezoekersbeheer & Werkplekbeheer (Visitor & Workspace Management)
+Koppelingen tussen softwareplatforms voor facility management/recepties en de Synguard database om bezoekers automatisch toegang te verlenen via QR-codes of badges.
+
+| Partner | Website | Doel van de Integratie | Data-uitwisseling |
+| :--- | :--- | :--- | :--- |
+| **GoBright** | https://gobright.com | Ruimte-, werkplek- en bezoekersbeheer. | Synchronisatie van bezoekersnaam, QR-token en geldigheidstijd via API. |
+| **Commuty** | https://www.commuty.net | Parkeerbeheer en flexplek-optimalisatie. | Realtime aansturing van parkeerbarrières op basis van medewerkersrechten. |
+| **Proxyclick** | https://www.proxyclick.com | Enterprise bezoekersregistratie cloudplatform. | Webhook-gestuurde aanmaak van tijdelijke toegangstokens in SynApp. |
+| **Bringme** | https://www.bringme.com | Slimme boxen en virtuele receptioniste. | Koppeling voor pakketontvangst en bezoekerstoegang bij de hoofdentree. |
+
+---
+
+## 3. Camerabewaking & Videomanagement (VMS)
+Koppelingen waarmee camera-beelden direct gekoppeld worden aan toegangscontrole-events (zoals 'Deur geforceerd' of 'Toegang geweigerd') in de meldkamer.
+
+| Partner | Website | Integratie Type | Key Functionaliteiten |
+| :--- | :--- | :--- | :--- |
+| **Milestone Systems** | https://www.milestonesys.com | XProtect VMS plugin integratie. | Live video bij alarmen, bookmarks in de videotimeline bij toegangsevents. |
+| **Network Optix (NX)** | https://www.networkoptix.com | Nx Witness VMS bidirectionele koppeling. | Virtuele knoppen in de VMS-interface om Synguard-deuren handmatig te openen. |
+| **Axis Communications** | https://www.axis.com | IP-camera's en netwerk-audiomodule integratie. | Kentekenherkenning (ANPR) camera's gekoppeld als 'lezer' aan SynCon Evo. |
+| **Mobotix** | https://www.mobotix.com | Decentraliseerde IP-camera integratie. | Event-gestuurde video-opnames gekoppeld aan hardware I/O-triggers. |
+
+---
+
+## 4. Biometrie & High-Security Identificatie
+Geavanceerde hardwarepartners voor identificatie op basis van unieke biologische kenmerken of streng beveiligde lezerprotocollen.
+
+- **Palmki** (https://palmki.be)
+  * **Toepassing:** Handlijnadertact-biometrie.
+  * **Techniek:** Hardware wordt aangesloten via Wiegand/OSDP op SynCon Evo lezermodules. Gebruikers-enrollment vindt plaats via een API-koppeling in SynApp.
+- **Idesco** (https://idesco.fi)
+  * **Toepassing:** High-security RFID (MIFARE Desfire EV2/EV3) en Bluetooth (BLE) mobiele ID-lezers.
+  * **Techniek:** Native OSDP v2 beveiligde bus-communicatie rechtstreeks naar de SynCon Evo controllers.
+- **STid Readers** (https://stid.com)
+  * **Toepassing:** Beveiligde handvrije Bluetooth-lezers en virtuele badges op smartphones.
+  * **Techniek:** SSCP of OSDP v2 protocol-integratie voor end-to-end encryptie van kaart tot server.
+- **Suprema** (https://www.supremainc.com)
+  * **Toepassing:** Vingerafdruk- en gezichtsherkenningsterminals.
+  * **Techniek:** IP-gebaseerde biometrische synchronisatie vanuit de Synguard database.
+
+---
+
+## 5. Gebouwbeheer (BMS), Liften & HR-systemen
+Koppelingen voor diepe integratie in de gebouwinfrastructuur en personeelsadministratie.
+
+- **Kone / Otis / Schindler** (Liftintegraties): Liftbesturing waarbij de SynCon Evo lezer in de liftkooi communiceert met de liftcomputer (bijv. via KONE ELI of Otis RSL-protocol). Bezoekers kunnen na badge-scan alleen geselecteerde verdiepingen kiezen.
+- **Schneider Electric / Siemens** (Gebouwbeheer): Koppelingen via BACnet of Modbus IP om klimaat en verlichting uit te schakelen in zones waar de laatste medewerker heeft uitgebadgeerd (aanwezigheidsdetectie).
+- **HR Link-integraties** (e.g., AFAS, SAP, Workday): Automatische import/export via SQL of REST API. Zodra een medewerker in dienst treedt in het HR-systeem, wordt er automatisch een account aangemaakt in SynApp.
