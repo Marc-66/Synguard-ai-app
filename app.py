@@ -16,12 +16,25 @@ DEFAULT_STATES = {
     "development_type": "1. Hardware Integrations SynApp/Con or extension with 3rd party device",
     "business_driver": "Requested in Official Tender",
     "is_customer_specific": "Customer Specific (Unique)",
-    "verticals": [], "benchmark_competitor": "", "link_project": "", "link_product": "",
-    "total_project_value": 0, "chargeable_value": 0, "potential_yearly_revenue": 0,
-    "resolved_problem": "", "value_end_customer": "", "value_partner": "", "value_synguard": "",
-    "current_situation": "", "overall_workflow": "", "desired_functionality": "",
-    "integration_details": "", "ui_ux_expectations": "", "acceptance_criteria": "",
-    "constraints_conditions": "", "tender_text": "",
+    "verticals": [], 
+    "benchmark_competitor": "", 
+    "link_project": "", 
+    "link_product": "",
+    "total_project_value": 0, 
+    "chargeable_value": 0, 
+    "potential_yearly_revenue": 0,
+    "resolved_problem": "", 
+    "value_end_customer": "", 
+    "value_partner": "", 
+    "value_synguard": "",
+    "current_situation": "", 
+    "overall_workflow": "", 
+    "desired_functionality": "",
+    "integration_details": "", 
+    "ui_ux_expectations": "", 
+    "acceptance_criteria": "",
+    "constraints_conditions": "", 
+    "tender_text": "",
     "matrix_data": [],
     "sow_budget_data": [
         {"Discipline / Jira Component": "Solution Architecture & Design", "Geschatte Uren": 8, "Uurtarief (€)": 125},
@@ -76,9 +89,10 @@ if os.path.exists(history_dir):
                                 st.session_state.matrix_data = updated_list
                             else:
                                 st.session_state[key] = val
-                    except Exception:
-                        pass
-                st.sidebar.success("Dossier succesvol herladen!")
+                    except Exception as e:
+                        st.sidebar.error(f"Fout bij herstellen van metadatavelden: {e}")
+                
+                st.sidebar.success("Dossier & álle invoervelden succesvol herladen!")
                 st.rerun()
 
 # API-key configuratie
@@ -110,8 +124,15 @@ st.title("🚀 Synguard AI Requirements & SoW Architect")
 col1, col2 = st.columns([1, 1.5])
 
 with col1:
+    # --- NIEUW: BUTTON OM EEN NIEUW DOSSIER TE STARTEN / TE CLEAREN ---
+    if st.button("➕ Start Nieuw Dossier (Clear Invoervelden)", type="secondary", use_container_width=True):
+        for key, val in DEFAULT_STATES.items():
+            st.session_state[key] = val
+        st.toast("Invoervelden succesvol leeggemaakt voor een nieuw dossier!", icon="🧹")
+        st.rerun()
+        
     st.markdown("### 📥 Klant Input")
-    st.text_area("Plak hier de e-mail of ruwe aanvraag van de klant/integrator:", height=180, key="cust_input")
+    st.text_area("Plak hier de e-mail of ruwe aanvraag van de klant/integrator:", height=150, key="cust_input")
     
     dev_types = [
         "1. Hardware Integrations SynApp/Con or extension with 3rd party device",
@@ -121,13 +142,39 @@ with col1:
     ]
     st.selectbox("Wat voor type ontwikkelingsverzoek is dit?", dev_types, key="development_type")
 
-    with st.expander("💼 Commerciële Impact & Business Value"):
-        st.text_input("Link naar Eindklant / Project / Tender:", key="link_project")
-        st.number_input("Wat kunnen we hiervoor rekenen (Licentie, Maatwerk in €):", min_value=0, step=500, key="chargeable_value")
+    with st.expander("💼 Commerciële Impact & Business Value", expanded=False):
+        drivers = ["Requested in Official Tender", "Strategic Feature for Market", "Customer Retention", "Partner Request"]
+        st.selectbox("Business Driver:", drivers, key="business_driver")
+        
+        spec_types = ["Customer Specific (Unique)", "Standard Product Enhancement (Reusable)"]
+        st.selectbox("Is Customer Specific?", spec_types, key="is_customer_specific")
+        
+        vertical_options = ["Corporate", "Logistics", "Healthcare", "Government", "Education", "Retail"]
+        st.multiselect("Verticals:", vertical_options, key="verticals")
+        
+        st.text_input("Benchmark Competitor:", key="benchmark_competitor")
+        st.text_input("Link to Project/Tender:", key="link_project")
+        st.text_input("Link to Product Requirement/Jira:", key="link_product")
+        
+        st.number_input("Total Project Value (€):", min_value=0, step=1000, key="total_project_value")
+        st.number_input("Chargeable Value (Customization/Licensing €):", min_value=0, step=500, key="chargeable_value")
+        st.number_input("Potential Yearly Recurring Revenue (MRR/ARR €):", min_value=0, step=500, key="potential_yearly_revenue")
 
-    with st.expander("📝 Functional Description (Technisch)"):
-        st.text_area("Huidige situatie & Pijnpunten:", key="current_situation")
-        st.text_area("Lijst van Gewenste Functionaliteiten:", key="desired_functionality")
+    with st.expander("📝 Functional Description (Technisch)", expanded=False):
+        st.text_area("What problem is resolved for the user?", key="resolved_problem")
+        st.text_area("Value for the end customer:", key="value_end_customer")
+        st.text_area("Value for the partner/integrator:", key="value_partner")
+        st.text_area("Value for Synguard:", key="value_synguard")
+        
+        st.markdown("---")
+        st.text_area("Current Situation / Pijnpunten:", key="current_situation")
+        st.text_area("Overall Workflow (Stap-voor-stap proces):", key="overall_workflow")
+        st.text_area("Desired Functionality (Lijst van eisen):", key="desired_functionality")
+        st.text_area("Integration Details / API context:", key="integration_details")
+        st.text_area("UI/UX Expectations & Schermwijzigingen:", key="ui_ux_expectations")
+        st.text_area("Acceptance Criteria (Harde klanteisen):", key="acceptance_criteria")
+        st.text_area("Constraints / Conditions / Beperkingen:", key="constraints_conditions")
+        st.text_area("Raw Tender Text (Indien van toepassing):", key="tender_text")
         
     st.markdown("---")
     generate_button = st.button("🚀 Genereer Volledige Pijplijn (CRD -> Tech -> SoW)", type="primary", use_container_width=True)
@@ -139,16 +186,29 @@ with col1:
             with st.spinner("AI doorloopt de stappen en genereert de documenten..."):
                 
                 # --- STAP 1: Customer Requirements Document ---
-                prompt_step1 = "Je bent de Synguard AI Requirements Agent. Synthetiseer de input tot een Customer Requirements rapport. Input: {raw}".format(raw=st.session_state.cust_input)
+                prompt_step1 = f"""Je bent de Synguard AI Requirements Agent. Synthetiseer de input tot een Customer Requirements rapport.
+                Neem hierin ook de expliciete details mee uit de functionele beschrijving:
+                Probleem: {st.session_state.resolved_problem}
+                Huidige situatie: {st.session_state.current_situation}
+                Gewenste functionaliteit: {st.session_state.desired_functionality}
+                
+                Ruwe Input: {st.session_state.cust_input}"""
+                
                 response_step1 = client.chat.completions.create(model="gpt-4o", messages=[{"role": "user", "content": prompt_step1}], temperature=0.2)
                 st.session_state.cust_req = response_step1.choices[0].message.content
 
                 # --- STAP 2: Technical Document ---
-                prompt_step2 = "Je bent de Synguard AI Technical Agent. Maak de harde technische specificaties inclusief een duidelijke Traceability Matrix tabel in markdown op basis van: {cust}".format(cust=st.session_state.cust_req)
+                prompt_step2 = f"""Je bent de Synguard AI Technical Agent. Maak de harde technische specificaties inclusief een duidelijke Traceability Matrix tabel in markdown op basis van het CRD en deze randvoorwaarden:
+                Integratie details: {st.session_state.integration_details}
+                UI/UX verwachtingen: {st.session_state.ui_ux_expectations}
+                Constraints: {st.session_state.constraints_conditions}
+                
+                CRD Basis: {st.session_state.cust_req}"""
+                
                 response_step2 = client.chat.completions.create(model="gpt-4o", messages=[{"role": "user", "content": prompt_step2}], temperature=0.2)
                 st.session_state.tech_req = response_step2.choices[0].message.content
 
-                # --- STAP 3: Matrix Extractie naar Data Editor (OPGELOST MET F-STRING & ESCAPING) ---
+                # --- STAP 3: Matrix Extractie naar Data Editor ---
                 tech_document_content = st.session_state.tech_req
                 prompt_matrix = f"""Je bent een data-extractie expert. Lees de zojuist gegenereerde Tech Specs en extraheer de Traceability Matrix tabel naar een valide JSON array.
 
@@ -186,16 +246,23 @@ with col1:
                 response_sow = client.chat.completions.create(model="gpt-4o", messages=[{"role": "user", "content": prompt_sow}], temperature=0.3)
                 st.session_state.sow_body = response_sow.choices[0].message.content
 
-                # --- Sla tussentijds dossier op in het archief ---
+                # --- AUTOMATISCH OPSLAAN EN COMMITTEN BIJ ELKE GENERATIE ---
                 output_dir = "outputs/generated_srs"
                 os.makedirs(output_dir, exist_ok=True)
                 timestamp = datetime.now().strftime("%Y%m%d_%H%M")
                 safe_title = "".join([c if c.isalnum() else "_" for c in st.session_state.cust_input[:30]]).strip("_").lower()
                 st.session_state.current_filepath = os.path.join(output_dir, f"{timestamp}_{safe_title}.md")
                 
-                ui_state_dict = {k: st.session_state[k] for k in DEFAULT_STATES.keys() if k not in ["cust_input", "cust_req", "tech_req", "current_filepath"]}
+                ui_state_dict = {}
+                for k in DEFAULT_STATES.keys():
+                    if k in st.session_state:
+                        ui_state_dict[k] = st.session_state[k]
+
                 with open(st.session_state.current_filepath, "w", encoding="utf-8") as f:
-                    f.write(st.session_state.cust_input + "\n[---SPLIT-DOSSIER---]\n" + st.session_state.cust_req + "\n[---SPLIT-DOSSIER---]\n" + st.session_state.tech_req + "\n[---SPLIT-DOSSIER---]\n" + json.dumps(ui_state_dict))
+                    f.write(st.session_state.cust_input + "\n[---SPLIT-DOSSIER---]\n" + 
+                            st.session_state.cust_req + "\n[---SPLIT-DOSSIER---]\n" + 
+                            st.session_state.tech_req + "\n[---SPLIT-DOSSIER---]\n" + 
+                            json.dumps(ui_state_dict, indent=4))
 
                 st.rerun()
 
@@ -217,7 +284,6 @@ with col2:
             
             if st.session_state.matrix_data:
                 df_matrix = pd.DataFrame(st.session_state.matrix_data)
-                # Zorg dat oude of wisselende kolomnamen netjes uniform getoond worden
                 df_matrix = df_matrix.rename(columns={"Requirement ID": "FR/NFR ID", "Bron / Customer Need (CN)": "Traces To CN", "Functionele Omschrijving (FR)": "Description"})
                 edited_df = st.data_editor(df_matrix, use_container_width=True, num_rows="dynamic")
                 st.session_state.matrix_data = edited_df.to_dict(orient="records")
@@ -234,13 +300,11 @@ with col2:
             st.subheader("📄 Draft: Statement of Work (SoW)")
             st.caption("Dit contract-ready document combineert de technische requirements, Jira disciplines en kostenbepalingen.")
             
-            # Dynamische budget editor (Brug naar Jira & Ureninschatting)
             st.markdown("#### 💰 Project Budget & Jira Component Ureninschatting")
             df_budget = pd.DataFrame(st.session_state.sow_budget_data)
             edited_budget_df = st.data_editor(df_budget, use_container_width=True, num_rows="dynamic")
             st.session_state.sow_budget_data = edited_budget_df.to_dict(orient="records")
             
-            # Bereken totalen live door op het scherm
             edited_budget_df["Geschatte Uren"] = pd.to_numeric(edited_budget_df["Geschatte Uren"], errors="coerce").fillna(0)
             edited_budget_df["Uurtarief (€)"] = pd.to_numeric(edited_budget_df["Uurtarief (€)"], errors="coerce").fillna(0)
             edited_budget_df["Totaal (€)"] = edited_budget_df["Geschatte Uren"] * edited_budget_df["Uurtarief (€)"]
@@ -253,8 +317,7 @@ with col2:
             st.markdown("---")
             st.markdown("#### 🖋️ SoW Contract Inhoud")
             
-            # De SoW tekst zelf is bewerkbaar in een grote textarea
-            edited_sow_body = st.text_area("Bewerk de officiële SoW tekst hieronder indien nodig:", value=st.session_state.sow_body, height=400)
+            edited_sow_body = st.text_area("Bekijk en bewerk de officiële SoW tekst hieronder indien nodig:", value=st.session_state.sow_body, height=400)
             st.session_state.sow_body = edited_sow_body
             
             st.markdown("---")
@@ -273,6 +336,14 @@ with col2:
                     f.write(f"## 8. Appendix: Requirements Traceability Matrix\n\n")
                     f.write(matrix_markdown)
                 
-                st.success("🎉 De Statement of Work (SoW) is succesvol weggeschreven naar `output/statement-of-work.md`!")
+                if st.session_state.current_filepath and os.path.exists(st.session_state.current_filepath):
+                    ui_state_dict = {k: st.session_state[k] for k in DEFAULT_STATES.keys() if k in st.session_state}
+                    with open(st.session_state.current_filepath, "w", encoding="utf-8") as f:
+                        f.write(st.session_state.cust_input + "\n[---SPLIT-DOSSIER---]\n" + 
+                                st.session_state.cust_req + "\n[---SPLIT-DOSSIER---]\n" + 
+                                st.session_state.tech_req + "\n[---SPLIT-DOSSIER---]\n" + 
+                                json.dumps(ui_state_dict, indent=4))
+                
+                st.success("🎉 De Statement of Work (SoW) en álle bijbehorende invoervelden zijn succesvol opgeslagen!")
         else:
             st.info("Genereer eerst de pijplijn om de Statement of Work (SoW) in te zien.")
