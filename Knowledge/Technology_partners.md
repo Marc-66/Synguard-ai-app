@@ -188,6 +188,10 @@ Geavanceerde hardwarepartners voor identificatie op basis van unieke biologische
   * **Toepassing:** Vingerafdruk- en gezichtsherkenningsterminals.
   * **Techniek:** IP-gebaseerde biometrische synchronisatie vanuit de Synguard database.
 
+## Suprema Integratie Architectuur
+- SynCon Evo controllers ondersteunen native OSDP-koppelingen met Suprema BioStation apparaten.
+- De biometrische templates worden beheerd in SynApp via de BioStar 2 API en gesynchroniseerd naar de lezers. 
+- Lokale werking bij netwerkuitval is gegarandeerd omdat de lezer de verificatie op de 'edge' doet.
 ---
 
 ## 5. Gebouwbeheer (BMS), Liften & HR-systemen
@@ -196,3 +200,4 @@ Koppelingen voor diepe integratie in de gebouwinfrastructuur en personeelsadmini
 - **Kone / Otis / Schindler** (Liftintegraties): Liftbesturing waarbij de SynCon Evo lezer in de liftkooi communiceert met de liftcomputer (bijv. via KONE ELI of Otis RSL-protocol). Bezoekers kunnen na badge-scan alleen geselecteerde verdiepingen kiezen.
 - **Schneider Electric / Siemens** (Gebouwbeheer): Koppelingen via BACnet of Modbus IP om klimaat en verlichting uit te schakelen in zones waar de laatste medewerker heeft uitgebadgeerd (aanwezigheidsdetectie).
 - **HR Link-integraties** (e.g., AFAS, SAP, Workday): Automatische import/export via SQL of REST API. Zodra een medewerker in dienst treedt in het HR-systeem, wordt er automatisch een account aangemaakt in SynApp.
+
