@@ -114,7 +114,7 @@ def read_file(path):
     return ""
 
 synguard_products = read_file("knowledge/synguard_products.md")
-tech_partners = read_file("knowledge/technology_partners.md")
+tech_partners = read_file("technology_partners.md")
 product_catalogue = read_file("knowledge/product_catalogue.md")
 
 # --- UI INTERFACE ---
@@ -124,7 +124,7 @@ st.title("🚀 Synguard AI Requirements & SoW Architect")
 col1, col2 = st.columns([1, 1.5])
 
 with col1:
-    # --- NIEUW: BUTTON OM EEN NIEUW DOSSIER TE STARTEN / TE CLEAREN ---
+    # BUTTON OM EEN NIEUW DOSSIER TE STARTEN / TE CLEAREN
     if st.button("➕ Start Nieuw Dossier (Clear Invoervelden)", type="secondary", use_container_width=True):
         for key, val in DEFAULT_STATES.items():
             st.session_state[key] = val
@@ -228,25 +228,84 @@ with col1:
                 except Exception as e:
                     st.session_state.matrix_data = []
 
-                # --- STAP 4: Statement of Work (SoW) Generatie ---
-                prompt_sow = """
-                Je bent de Synguard Commercial & Delivery Agent. Schrijf een formeel en professioneel 'Statement of Work' (SoW) document gericht aan de partner/klant.
-                Gebruik hiervoor de details uit het Technical Requirements Document:
-                {tech_doc}
+                # --- STAP 4: HERSCHREVEN NIEUWE SOW STRUCTUUR (CONFORM INTEGRATIE-MODEL) ---
+                prompt_sow = f"""
+                Je bent de Synguard Commercial & Delivery Agent. Schrijf een formele en professionele 'Statement of Work' (SoW).
+                Gebruik de details uit de gegenereerde Technische Specificaties:
+                {st.session_state.tech_req}
 
-                Structureer het document strak volgens de Synguard SoW indeling:
-                1. Executive Summary & Project Purpose
-                2. Detailed Scope of Work (Verwijs expliciet naar de unieke functionele requirements zoals FR-001)
-                3. Out of Scope (Wat levert Synguard expliciet NIET, bijv. lokale IT-infrastructuur, bekabeling)
-                4. Deliverables & Jira Component Mapping
-                5. High-Level Timeline & Milestones
-                6. Acceptance Criteria & Sign-off Procedure
-                """.format(tech_doc=st.session_state.tech_req)
+                Hanteer EXACT de volgende hiërarchie en structuur in je markdown output:
                 
-                response_sow = client.chat.completions.create(model="gpt-4o", messages=[{"role": "user", "content": prompt_sow}], temperature=0.3)
+                # Statement of Work (SoW)
+                **Project:** [Vul hier projectnaam/koppeling in op basis van de input]
+                **Documentversie:** 1.0
+                **Status:** Draft / For Review
+                **Project Owner:** Synguard Product Development
+                **Klant:** [In te vullen Klantnaam]
+                **Datum:** {datetime.now().strftime('%d-%m-%Y')}
+
+                ## 1. Projectdoel
+                [Schrijf hier het overkoepelende doel en beschrijf de te automatiseren processen via bulletpoints:
+                - Bidirectionele synchronisatie...
+                - Realtime registratie...
+                - Monitoring van batterijstatussen...]
+
+                ## 2. Project Scope
+                ### In Scope
+                Synguard zal de volgende functionaliteiten ontwikkelen en opleveren. Formatteer ELKE functionaliteit strikt als volgt:
+                - **FR-001 [Naam Requirement]**
+                  - **Beschrijving:** ...
+                  - **Omvang:** ...
+                  - **Acceptatiecriteria:** ...
+
+                ## 3. Technische Scope
+                ### Integratiearchitectuur
+                - **Integratiemodel:** Cloud-to-Cloud Integratie
+                - **Communicatie:** REST API / HTTPS/TLS / OAuth of API Key conform specificaties
+                - **Bronplatformen:** iLOQ API / Synguard Cloud Platform / SynApp User Interface
+
+                ## 4. Deliverables
+                Formatteer de deliverables met D-codes:
+                - **D-001 Productieklare Integratie** - Volledig werkende koppeling.
+                - **D-002 Synchronisatie Engine** - Data mapping, bidirectionele sync, foutafhandeling.
+                - **D-003 Event Logging Module** - Ingestie, opslag en dashboardvisualisatie.
+                - **D-004 Batterij Monitoring Module** - Status ophalen, waarschuwingen en SynApp UI.
+                - **D-005 Test & Validatie Rapport** - Scenario's, testresultaten en goedkeuringsstatus.
+                - **D-006 Technische Documentatie** - Architectuur, API mapping en onderhoudsrichtlijnen.
+
+                ## 5. Out of Scope
+                ### Niet inbegrepen
+                - Lokale serverinstallaties, on-premise infrastructuur, netwerkbekabeling, VPN-configuraties, firewalls, hardwareleveringen.
+                ### Integratiebeperkingen
+                - De integratie is expliciet beperkt tot functionaliteiten die beschikbaar zijn via de officiële API's.
+
+                ## 6. Rollen & Verantwoordelijkheden
+                - **Synguard:** Analyse, ontwikkeling, testing, technische documentatie en go-live support.
+                - **Klant:** Beschikbaar stellen van API-toegang, testaccounts, functionele validatie en formele acceptatie.
+                - **API/Technologie Partner:** Beschikbaarheid van API-services en documentatie.
+
+                ## 7. Planning & Mijlpalen
+                [Genereer een heldere markdown tabel met Fasen, Activiteit en Duur]
+                ### Mijlpalen
+                - **M1 Analyse Afgerond** - API-connectiviteit bevestigd.
+                - **M2 Integratie Voltooid** - Koppelingen operationeel.
+                - **M3 Acceptatietesten Geslaagd** - Alle scenario's succesvol uitgevoerd.
+                - **M4 Productie Go-Live** - Operationeel in productie.
+
+                ## 8. Afhankelijkheden & Risico's
+                [Beschrijf de risico's omtrent API beschikbaarheid en testomgevingen]
+
+                ## 9. Change Request Procedure
+                [Beschrijf de procedure voor scopewijzigingen]
+
+                ## 10. Acceptatie & Sign-Off
+                [Beschrijf de formele voorwaarden voor oplevering]
+                """
+                
+                response_sow = client.chat.completions.create(model="gpt-4o", messages=[{"role": "user", "content": prompt_sow}], temperature=0.2)
                 st.session_state.sow_body = response_sow.choices[0].message.content
 
-                # --- AUTOMATISCH OPSLAAN EN COMMITTEN BIJ ELKE GENERATIE ---
+                # --- AUTOMATISCH OPSLAAN BIJ GENEREREN ---
                 output_dir = "outputs/generated_srs"
                 os.makedirs(output_dir, exist_ok=True)
                 timestamp = datetime.now().strftime("%Y%m%d_%H%M")
@@ -298,7 +357,7 @@ with col2:
     with tab4:
         if st.session_state.sow_body:
             st.subheader("📄 Draft: Statement of Work (SoW)")
-            st.caption("Dit contract-ready document combineert de technische requirements, Jira disciplines en kostenbepalingen.")
+            st.caption("Dit contract-ready document combineert de technische requirements, Jira disciplines en kostenbepalingen volgens de iLOQ structuurrichtlijn.")
             
             st.markdown("#### 💰 Project Budget & Jira Component Ureninschatting")
             df_budget = pd.DataFrame(st.session_state.sow_budget_data)
@@ -327,14 +386,15 @@ with col2:
                 
                 os.makedirs("output", exist_ok=True)
                 with open("output/statement-of-work.md", "w", encoding="utf-8") as f:
-                    f.write(f"# STATEMENT OF WORK (SoW) - SYNGUARD\n\n")
-                    f.write(f"**Generatiedatum:** {datetime.now().strftime('%d-%m-%Y')}\n\n")
                     f.write(st.session_state.sow_body)
-                    f.write(f"\n\n## 7. Commercial Terms & Resource Budget (Jira Components)\n\n")
+                    f.write(f"\n\n## 11. Commercial Terms & Resource Budget (Jira Components)\n\n")
                     f.write(budget_markdown)
                     f.write(f"\n\n**Gecalculeerde Totale Investering:** € {total_cost:,.2f} (Excl. BTW)\n\n")
-                    f.write(f"## 8. Appendix: Requirements Traceability Matrix\n\n")
+                    f.write(f"## 12. Appendix: Requirements Traceability Matrix\n\n")
                     f.write(matrix_markdown)
+                    f.write(f"\n\n### AI Agent Output Requirements Checklist\n")
+                    f.write(f"Bij generatie van Jira-tickets, technische specificaties of projectdocumentatie moet elke Functional Requirement (FR) worden vertaald naar:\n")
+                    f.write(f"- Epic\n- Feature\n- User Stories\n- Technical Tasks\n- Test Cases\n- Acceptance Criteria\n- Traceability Matrix (FR → TS → Test Case → Deliverable)\n")
                 
                 if st.session_state.current_filepath and os.path.exists(st.session_state.current_filepath):
                     ui_state_dict = {k: st.session_state[k] for k in DEFAULT_STATES.keys() if k in st.session_state}
@@ -344,6 +404,6 @@ with col2:
                                 st.session_state.tech_req + "\n[---SPLIT-DOSSIER---]\n" + 
                                 json.dumps(ui_state_dict, indent=4))
                 
-                st.success("🎉 De Statement of Work (SoW) en álle bijbehorende invoervelden zijn succesvol opgeslagen!")
+                st.success("🎉 De Statement of Work (SoW) is conform de nieuwe iLOQ-structuur opgeslagen in `output/statement-of-work.md`!")
         else:
             st.info("Genereer eerst de pijplijn om de Statement of Work (SoW) in te zien.")
