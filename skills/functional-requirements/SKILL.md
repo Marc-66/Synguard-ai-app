@@ -1,12 +1,13 @@
 ---
 name: functional-requirements
-description: Generate Functional Requirements (FR) and Non-Functional Requirements (NFR) from Customer Needs and Software Vision. Creates individual requirement files with traceability. Step 5 of Problem-Based SRS methodology.
+description: Generate Functional Requirements (FR) and Non-Functional Requirements (NFR) from Customer Needs and Software Vision. Creates individual requirement files with traceability. Supports SOW integration for component-based project organization. Step 5 of Problem-Based SRS methodology.
 license: MIT
 metadata:
   author: rafael-gorski
-  version: "1.2"
+  version: "1.3"
   methodology: problem-based-srs
   step: 5
+  sow-integration: "true"
 ---
 
 # Functional Requirements (FR) & Non-Functional Requirements (NFR)
@@ -55,7 +56,8 @@ For each CN:
 2. Identify any NFRs needed (quality attributes)
 3. Save each FR/NFR as an individual file (see File Output section)
 4. Create index files (_index.md) for both folders
-5. **Present ALL FR statements in your response** (see Response Format immediately below)
+5. **If SOW context available:** Map FRs to SOW components and use SOW-style acceptance criteria (see SOW Integration section)
+6. **Present ALL FR statements in your response** (see Response Format immediately below)
 
 ---
 
@@ -266,7 +268,204 @@ The [System] shall [quality attribute] [measurable target] [condition].
 
 ---
 
-## Traceability Rule (CRITICAL)
+## SOW Integration (When SOW Context Available)
+
+If the project has a Statement of Work (SOW) from the `sow-generator` skill, enhance your FR generation with SOW-specific metadata:
+
+### Enhanced FR File Template (SOW-Aware)
+
+Each FR file should include SOW context:
+
+```markdown
+## FR-[NNN]: [Brief Title]
+
+## Requirement
+
+**ID:** FR-[NNN]  
+**Title:** [Descriptive title]  
+**Priority:** [Must Have | Should Have | Could Have | Won't Have]  
+**Status:** [Draft | Review | Approved | In Progress | Implemented | Tested]
+
+### Statement
+
+The [System] shall [verb] [object] [constraint] [condition].
+
+## Traceability
+
+| Traces To | ID | Description |
+|-----------|-----|-------------|
+| Customer Need | CN-[X] | [CN description] |
+| Customer Problem | CP-[Y] | [CP description] |
+| SOW Component | C[N] | [Component name - from SOW] |
+| SOW Section | [N.M] | [Deliverables or Acceptance Criteria section] |
+
+## SOW Context
+
+**Delivery Component:** C[N] - [Component Name]  
+**SOW Deliverable Section:** 7.[N]  
+**SOW Acceptance Section:** 8.[N]  
+**Estimated Effort:** [X days] (from SOW Section 9)  
+**Scope Status:** ✅ In Scope / ❌ Out of Scope
+
+## Acceptance Criteria
+
+### Basic Testability
+- [ ] Criterion 1 (testable, unit-level)
+- [ ] Criterion 2 (testable, unit-level)
+
+### SOW-Style Acceptance (End-to-End)
+- [ ] [End-to-end test scenario reflecting actual user/system behavior]
+- [ ] [Error handling scenario matching SOW acceptance criteria]
+- [ ] [Performance or quality scenario if applicable]
+
+## Implementation Notes
+
+<!-- Engineers add design/implementation notes here -->
+
+## Test Cases
+
+<!-- QA adds test case references here; link to SOW acceptance criteria -->
+
+---
+*Created: [Date]*  
+*Last Updated: [Date]*  
+*Author: [Name]*  
+*SOW Version: [Version] — [Date]*
+```
+
+### SOW Acceptance Criteria Format
+
+When you have SOW context, format acceptance criteria to match SOW style (Section 8 format from documents like Eurofiber):
+
+**Pattern 1: End-to-End Workflow**
+```markdown
+- [ ] [Actor] can [action] via [component/interface] [result/validation]
+
+Example:
+- [ ] User can initiate document scan via kiosk UI without errors
+- [ ] System validates document type (eID / paspoort / rijbewijs)
+- [ ] System rejects unchecksum-failing documents with error messaging
+```
+
+**Pattern 2: Error Handling**
+```markdown
+- [ ] When [error condition], [system response] [user impact]
+
+Example:
+- [ ] When enrollment fails, fallback screen appears with dispatch instructions
+- [ ] When network timeout occurs, system logs error and retries (max 3 times)
+```
+
+**Pattern 3: Integration/Communication**
+```markdown
+- [ ] [Component A] and [Component B] [interaction] [verification]
+
+Example:
+- [ ] BioStation and SelfService kiosk communicate within 5 second response time
+- [ ] SIP call connects to dispatch system with stable audio quality
+```
+
+**Pattern 4: Performance/Scalability**
+```markdown
+- [ ] System [performs action] [under load/constraint] [measurable result]
+
+Example:
+- [ ] System handles 100 concurrent visitors without performance degradation
+- [ ] Document cleanup job runs every 10 minutes without blocking user flows
+```
+
+### Component Grouping in Index
+
+In the `_index.md` file, organize FRs by SOW component:
+
+```markdown
+# Functional Requirements Index
+
+## Summary
+
+Total FRs: X  
+Total Components: Y  
+In Scope: A, Out of Scope: B
+
+---
+
+## FRs by SOW Component
+
+### Component C01: [Component Name] (SOW 7.1)
+**Estimated Effort:** 5.5 days (SOW 9)  
+**Status:** In Development
+
+- **FR-001-[name]** → CN-001 | [Brief description]
+- **FR-002-[name]** → CN-002 | [Brief description]
+- **FR-003-[name]** → CN-003 | [Brief description]
+
+**Sub-total:** 3 FRs
+
+---
+
+### Component C02: [Component Name] (SOW 7.2)
+**Estimated Effort:** 5 days (SOW 9)  
+**Status:** In Design
+
+- **FR-004-[name]** → CN-004 | [Brief description]
+- **FR-005-[name]** → CN-005 | [Brief description]
+
+**Sub-total:** 2 FRs
+
+---
+
+## Traceability Matrix (CP → CN → FR → Component)
+
+| CP | CN | FR | Component | Status |
+|----|----|----|-----------|--------|
+| CP-01 | CN-001 | FR-001 | C01 | ✅ In Scope |
+| CP-01 | CN-002 | FR-002 | C01 | ✅ In Scope |
+| ... | ... | ... | ... | ... |
+
+---
+
+## Effort Tracking
+
+| Component | FRs | Est. Days | Actual Days | % Complete |
+|-----------|-----|-----------|-------------|------------|
+| C01 | 3 | 5.5 | TBD | 0% |
+| C02 | 2 | 5.0 | TBD | 0% |
+| **TOTAL** | **5** | **10.5** | **TBD** | **0%** |
+```
+
+---
+
+## Integration Workflow
+
+When you have SOW context:
+
+1. **Input:** SOW document (parsed by sow-generator skill) + CNs + Software Vision
+2. **Process:** For each CN, generate FRs and assign to SOW component
+3. **Validate:** Use sow-scope-mapper skill to verify FRs don't violate scope
+4. **Output:** FR files with SOW component tags + component-organized index
+5. **Handoff:** FRs ready for development grouped by delivery component
+
+**Example Flow:**
+
+```
+SOW (Eurofiber)
+    ↓
+sow-generator: Parse into components (C01-C06)
+    ↓
+customer-needs: Generate CNs from "In Scope" items
+    ↓
+functional-requirements: Generate FRs, assign to components (THIS SKILL)
+    ↓
+sow-scope-mapper: Validate FR vs. scope boundaries
+    ↓
+zigzag-validator: Confirm full traceability (CP → CN → FR → Component)
+    ↓
+Output: FR files tagged by component, ready for dev team
+```
+
+---
+
+
 
 - Every FR MUST trace to at least one Customer Need (FR.X → CN.Y)
 - Every NFR SHOULD trace to CNs or indicate which FRs it applies to

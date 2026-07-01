@@ -202,6 +202,55 @@ Problem-Based-SRS/
 
 Case studies: [`crm-example.md`](skills/problem-based-srs/references/crm-example.md) and [`microer-example.md`](skills/problem-based-srs/references/microer-example.md) walk through complete sessions.
 
+## 📋 Standardized SOW Structure
+
+All generated Statement of Work (SOW) documents follow a **standardized 11-section structure** based on the Eurofiber template. This ensures consistency across all generated and saved SOW documents.
+
+### SOW Sections
+
+Every SOW automatically includes:
+
+| # | Section | Purpose |
+|---|---------|---------|
+| 1 | **Project Overzicht** | Project metadata, timeline, objectives |
+| 2 | **Integratieflow** | Visual workflows (sync, logging, monitoring) |
+| 3 | **Scope** | In-scope features + Out-of-scope items |
+| 4 | **Systeemvereisten** | Platform, network, external dependencies |
+| 5 | **Aannames** | Project assumptions with clear statements |
+| 6 | **Wijzigingsbeheer** | Change management process |
+| 7 | **Op te leveren resultaten** | Specific deliverables with descriptions |
+| 8 | **Acceptatiecriteria** | Testable acceptance criteria with ✓ checkmarks |
+| 9 | **Inschatting** | Budget breakdown + phase timeline |
+| 10 | **Roles & Responsibilities** | RACI matrix with clear assignments |
+| 11 | **Aanvaarding** | Sign-off section for stakeholders |
+
+### Template Implementation
+
+The template is provided by `sow_template.py`:
+
+```python
+from sow_template import SOWTemplate
+
+# Build complete SOW from metadata
+sow_document = SOWTemplate.build_complete_sow(metadata_dict)
+```
+
+### File Organization
+
+- **Template module**: `sow_template.py` (formatting functions)
+- **Generated SOWs**: `outputs/generated_srs/` (timestamped filenames)
+- **Documentation**: `docs/SOW_STRUCTURE.md` (detailed reference)
+- **Examples**: `outputs/generated_srs/20260701_*.md` (reference examples)
+
+### When Structure Is Applied
+
+✅ **SOW Generation Pipeline** — Automatically formats all generated SOWs  
+✅ **File Saves** — All saved SOW examples use standardized structure  
+✅ **Template Consistency** — New SOWs inherit structure from `sow_template.py`  
+✅ **Quality Checks** — Pipeline validates all 11 sections are present  
+
+For detailed metadata requirements and field specifications, see [`docs/SOW_STRUCTURE.md`](docs/SOW_STRUCTURE.md).
+
 ## Research and standards
 
 Based on the methodology by Gorski & Stadzisz, published as peer-reviewed research.
